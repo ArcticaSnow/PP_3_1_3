@@ -27,12 +27,12 @@ public class AdminController {
 
     @GetMapping()
     public String getUsers(Model model, Principal principal, @ModelAttribute("user") User user) {
-        User current_user = userService.findByUsername(principal.getName());
+        User currentUser = userService.findByUsername(principal.getName());
 
         model.addAttribute("table_name", "Users");
         model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("roles", roleService.getAllRoles());
-        model.addAttribute("current_user", current_user);
+        model.addAttribute("current_user", currentUser);
 
         return "adminPages/admin";
     }
@@ -45,10 +45,10 @@ public class AdminController {
 
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("user") User user, Principal principal, @PathVariable("id") Integer id) {
-        int current_id = userService.findByUsername(principal.getName()).getId();
+        int currentId = userService.findByUsername(principal.getName()).getId();
 
         // если админ обновляет свою собственную учетку, даннные в Authentication (откуда мы тянем principal) также обновятся, и в navbar будет сразу актуальная информация
-        if (id == current_id) {
+        if (id == currentId) {
             Authentication auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
             RequestContextHolder.currentRequestAttributes().setAttribute("SPRING_SECURITY_CONTEXT", auth, RequestAttributes.SCOPE_SESSION);
@@ -60,12 +60,12 @@ public class AdminController {
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") Integer id, Principal principal) {
-        int current_id = userService.findByUsername(principal.getName()).getId();
+        int currentId = userService.findByUsername(principal.getName()).getId();
 
         userService.deleteUser(id);
 
         // если админ удаляет свою собственную учетку, происходит логаут
-        return (id == current_id) ? "redirect:/logout" : "redirect:/admin";
+        return (id == currentId) ? "redirect:/logout" : "redirect:/admin";
     }
 
 }
